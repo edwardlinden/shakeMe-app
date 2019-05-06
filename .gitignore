@@ -7,4 +7,6 @@ npm-debug.*
 *.mobileprovision
 package-lock.json
 
+
 .idea
+
