@@ -22,5 +22,18 @@
     "babel-preset-expo": "^5.0.0",
     "jest-expo": "^32.0.0"
   },
-  "private": true
+  "private": true,
+  "name": "shakeme-app",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edwardlinden/shakeMe-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/edwardlinden/shakeMe-app/issues"
+  },
+  "homepage": "https://github.com/edwardlinden/shakeMe-app#readme",
+  "description": ""
 }
