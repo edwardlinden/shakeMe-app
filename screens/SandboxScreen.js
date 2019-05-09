@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { ExpoConfigView } from '@expo/samples';
+import ShakeEventExpo from './ShakeEventExpo';
 import { Text, StyleSheet, View, Button, Vibration, Alert } from 'react-native';
 import { Accelerometer } from 'expo';
 
@@ -9,44 +10,58 @@ export default class SandboxScreen extends Component {
     constructor(props){
         super(props);
         this.state = {
-            accelerometerData: {},
-            raisedHand: false
+            stateString: "nothing.",
+            accelerometerData: {}
         }
     }
   static navigationOptions = {
     title: 'sandbox',
   };
 
+  prevX = 0;
+  prevY = 0;
+  prevZ = 0;
+  static NOISE = 0.7;
+
   componentWillMount(){
+      /*ShakeEventExpo.addListener(() => {
+          Alert.alert('Shaking!!!', "aaaaaa!");
+      });*/
       this._subscribe();
+
   }
 
   componentWillUnmount(){
+      //ShakeEventExpo.removeListener();
       this._unsubscribe();
   }
 
-  _subscribe(){
-      this._subscription = Accelerometer.addListener((accelerometerData) => {
-          this.setState({ accelerometerData });
-          this.checkAccData();
-      });
-      Accelerometer.setUpdateInterval(1000);
-  }
+    _subscribe(){
+        this._subscription = Accelerometer.addListener((accData) => {
+            this.setState({ accelerometerData: accData });
+            this.prevX = this.state.accelerometerData.x;
+            this.prevY = this.state.accelerometerData.y;
+            this.prevZ = this.state.accelerometerData.z;
+            this.checkAccData();
+        });
+        Accelerometer.setUpdateInterval(1000);
+    }
 
-  _unsubscribe(){
-      this._subscription && this._subscription.remove();
-      this._subscription = null;
-  }
+    _unsubscribe(){
+        this._subscription && this._subscription.remove();
+        this._subscription = null;
+    }
 
-  checkAccData(){
-      const { z } = this.state.accelerometerData;
+    checkAccData(){
+        const { z } = this.state.accelerometerData;
 
-      if(z > 2){
-          this.vibrate();
-      }
-  }
+        if(z > 2){
+            this.vibrate();
+        }
+    }
 
-  vibrate(){
+
+  static vibrate(){
       Vibration.vibrate(200);
   }
 
@@ -55,10 +70,8 @@ export default class SandboxScreen extends Component {
      * content, we just wanted to give you a quick view of your config */
       return (
           <View style={styles.container}>
-              <Text style={styles.text}>x: {JSON.stringify(this.state.accelerometerData.x)}</Text>
-              <Text style={styles.text}>y: {JSON.stringify(this.state.accelerometerData.y)}</Text>
-              <Text style={styles.text}>z: {JSON.stringify(this.state.accelerometerData.z)}</Text>
-              <Button title={"Vibrate"} onPress={this.vibrate}/>
+              <Text style={styles.text}>{Math.abs(this.prevX - this.state.accelerometerData.x)}</Text>
+              <Button title={"Vibrate"} onPress={SandboxScreen.vibrate}/>
         </View>
   );
   }
