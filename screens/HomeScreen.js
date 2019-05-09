@@ -4,11 +4,14 @@ import { FlatList, ActivityIndicator, Text, View, ScrollView, StyleSheet  } from
 export default class HomeScreen extends React.Component {
   constructor(props){
     super(props);
-    this.state ={ isLoading: true}
+    this.state = { 
+      isLoading: true,
+      dataSource: null
+          };
   }
 
   componentDidMount(){
-    return fetch('http://pebble-pickup.herokuapp.com/tweets/random')
+    return fetch('https://pebble-pickup.herokuapp.com/tweets/random')
       .then((response) => response.json())
       .then((responseJson) => {
 
