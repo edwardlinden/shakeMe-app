@@ -21,7 +21,7 @@ export default class SandboxScreen extends Component {
   prevX = 0;
   prevY = 0;
   prevZ = 0;
-  static NOISE = 0.7;
+  static NOISE = 0.9;
 
   componentWillMount(){
       /*ShakeEventExpo.addListener(() => {
@@ -44,7 +44,7 @@ export default class SandboxScreen extends Component {
             this.prevZ = this.state.accelerometerData.z;
             this.setState({ accelerometerData: accData });
         });
-        Accelerometer.setUpdateInterval(100);
+        Accelerometer.setUpdateInterval(200);
     }
 
     _unsubscribe(){
@@ -53,12 +53,21 @@ export default class SandboxScreen extends Component {
     }
 
     checkAccData(){
-        const { x } = this.state.accelerometerData;
+        const { x, y, z } = this.state.accelerometerData;
 
-        if(Math.abs(this.prevX - x) > SandboxScreen.NOISE){
-            console.log("AAAAAAAAA");
-            SandboxScreen.vibrate();
+        if(Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > SandboxScreen.NOISE){
+            this.handleShake();
         }
+    }
+
+    handleShake(){
+      this._unsubscribe();
+      this.prevX = this.state.accelerometerData.x;
+      this.prevY = this.state.accelerometerData.y;
+      this.prevZ = this.state.accelerometerData.z;
+      SandboxScreen.vibrate();
+      console.log("shaken");
+      setTimeout(() => {this._subscribe()}, 2000);
     }
 
 
