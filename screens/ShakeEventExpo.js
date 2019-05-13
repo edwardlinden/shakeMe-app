@@ -13,7 +13,7 @@ import {
 
 const THRESHOLD = 800;
 
-export class ShakeEventExpo {
+export default class ShakeEventExpo {
     static addListener(handler) {
         let
             last_x,

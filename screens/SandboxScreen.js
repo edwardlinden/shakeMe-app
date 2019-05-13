@@ -38,13 +38,13 @@ export default class SandboxScreen extends Component {
 
     _subscribe(){
         this._subscription = Accelerometer.addListener((accData) => {
-            this.setState({ accelerometerData: accData });
+            this.checkAccData();
             this.prevX = this.state.accelerometerData.x;
             this.prevY = this.state.accelerometerData.y;
             this.prevZ = this.state.accelerometerData.z;
-            this.checkAccData();
+            this.setState({ accelerometerData: accData });
         });
-        Accelerometer.setUpdateInterval(1000);
+        Accelerometer.setUpdateInterval(100);
     }
 
     _unsubscribe(){
@@ -53,10 +53,11 @@ export default class SandboxScreen extends Component {
     }
 
     checkAccData(){
-        const { z } = this.state.accelerometerData;
+        const { x } = this.state.accelerometerData;
 
-        if(z > 2){
-            this.vibrate();
+        if(Math.abs(this.prevX - x) > SandboxScreen.NOISE){
+            console.log("AAAAAAAAA");
+            SandboxScreen.vibrate();
         }
     }
 
