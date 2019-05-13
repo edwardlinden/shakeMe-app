@@ -11,7 +11,8 @@ export default class SandboxScreen extends Component {
         super(props);
         this.state = {
             stateString: "nothing.",
-            accelerometerData: {}
+            accelerometerData: {},
+            shook: false
         }
     }
   static navigationOptions = {
@@ -21,7 +22,7 @@ export default class SandboxScreen extends Component {
   prevX = 0;
   prevY = 0;
   prevZ = 0;
-  static NOISE = 0.9;
+  static NOISE = 1;
 
   componentWillMount(){
       /*ShakeEventExpo.addListener(() => {
@@ -56,16 +57,19 @@ export default class SandboxScreen extends Component {
         const { x, y, z } = this.state.accelerometerData;
 
         if(Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > SandboxScreen.NOISE){
-            this.handleShake();
+            console.log(this.state.shook);
+            if(this.state.shook){
+                this.setState({shook: false});
+            } else {
+                this.handleShake();
+            }
         }
     }
 
     handleShake(){
       this._unsubscribe();
-      this.prevX = this.state.accelerometerData.x;
-      this.prevY = this.state.accelerometerData.y;
-      this.prevZ = this.state.accelerometerData.z;
       SandboxScreen.vibrate();
+      this.setState({shook:true});
       console.log("shaken");
       setTimeout(() => {this._subscribe()}, 2000);
     }
@@ -80,7 +84,7 @@ export default class SandboxScreen extends Component {
      * content, we just wanted to give you a quick view of your config */
       return (
           <View style={styles.container}>
-              <Text style={styles.text}>{Math.abs(this.prevX - this.state.accelerometerData.x)}</Text>
+              <Text style={styles.text}>{Math.abs(this.prevX + this.prevY + this.prevZ - this.state.accelerometerData.x - this.state.accelerometerData.y - this.state.accelerometerData.z)}</Text>
               <Button title={"Vibrate"} onPress={SandboxScreen.vibrate}/>
         </View>
   );
