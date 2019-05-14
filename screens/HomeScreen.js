@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text, StyleSheet, View, Button, Vibration, Platform } from 'react-native';
-import { Accelerometer } from 'expo';
+import { Accelerometer, LinearGradient } from 'expo';
 
 export default class HomeScreen extends Component {
     constructor(props){
@@ -97,9 +97,12 @@ export default class HomeScreen extends Component {
         /* Go ahead and delete ExpoConfigView and replace it with your
          * content, we just wanted to give you a quick view of your config */
         return (
-            <View style={styles.container}>
-                <Text style={styles.text}>{content}</Text>
-            </View>
+            <LinearGradient style={styles.container} colors={['#ff5263', '#ffd6d9']}>
+                <LinearGradient
+                    colors={['#ffd6d9', '#ff5263']}>
+                    <Text style={styles.text}>{content}</Text>
+                </LinearGradient>
+            </LinearGradient>
         );
     }
 }
@@ -109,11 +112,13 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 45,
         textAlign: 'center',
+        color: 'white',
     },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     paddingTop: 80,
+    paddingLeft: 30,
+    paddingRight: 30,
   },
   developmentModeText: {
     marginBottom: 20,

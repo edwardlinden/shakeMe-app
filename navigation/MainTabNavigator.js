@@ -3,6 +3,7 @@ import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 import modelInstance from "../Data/shakeMeModel";
 import TabBarIcon from '../components/TabBarIcon';
+import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import SandboxScreen from '../screens/SandboxScreen';
 
@@ -13,13 +14,19 @@ const HomeStack = createStackNavigator({
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Pick-Up',
+  tabBarOptions: {
+      activeTintColor: '#ff2f43',
+      inactiveTintColor: '#ff2f43',
+  },
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon
+    <Ionicons
       focused={focused}
+      color="#ff2f43"
+      size={28}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? `ios-albums`
+          : 'md-albums'
       }
     />
   ),
@@ -32,12 +39,22 @@ const SandboxStack = createStackNavigator({
 
 SandboxStack.navigationOptions = {
   tabBarLabel: 'Sandbox',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-construct' : 'md-construct'}
-    />
-  ),
+    tabBarOptions: {
+        activeTintColor: '#ff2f43',
+        inactiveTintColor: '#ff2f43',
+    },
+    tabBarIcon: ({ focused }) => (
+        <Ionicons
+            focused={focused}
+            color="#ff2f43"
+            size={28}
+            name={
+                Platform.OS === 'ios'
+                    ? `ios-star-outline`
+                    : 'md-star-outline'
+            }
+        />
+    ),
 };
 
 export default createBottomTabNavigator({
