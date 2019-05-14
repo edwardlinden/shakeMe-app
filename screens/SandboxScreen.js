@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { ExpoConfigView } from '@expo/samples';
 import ShakeEventExpo from './ShakeEventExpo';
-import { Text, StyleSheet, View, Button, Vibration, Alert } from 'react-native';
+import { Text, StyleSheet, View, Button, Vibratio } from 'react-native';
 import { Accelerometer } from 'expo';
-import modelInstance from "../Data/shakeMeModel";
 
 /*
 * Sandbox screen for playing around and learning React Native in*/

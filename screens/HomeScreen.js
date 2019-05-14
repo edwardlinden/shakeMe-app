@@ -1,107 +1,119 @@
-import React from 'react';
-import {
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { WebBrowser } from 'expo';
+import React, { Component } from 'react';
+import { Text, StyleSheet, View, Button, Vibration, Platform } from 'react-native';
+import { Accelerometer } from 'expo';
 
-import { MonoText } from '../components/StyledText';
-
-export default class HomeScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
-  render() {
-    return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
-
-          <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>ShakeMe</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              SHAKE ME BABY boom!
-            </Text>
-          </View>
-
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Press here to go to Tinder!</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  _maybeRenderDevelopmentModeWarning() {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
-      return (
-        <Text style={styles.developmentModeText}>
-          ShakeMe is an interactive app for the digital era of love. The new generation want to collaborate in different ways, and shakeMe encourage this! Go Go Go!
-          tools. {learnMoreButton}
-        </Text>
-      );
-    } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
-      );
+export default class HomeScreen extends Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            stateString: "nothing.",
+            accelerometerData: {},
+            shook: false,
+            status: "LOADING",
+            line: ""
+        }
     }
-  }
+    static navigationOptions = {
+        header: null
+    }
+    prevX = 0;
+    prevY = 0;
+    prevZ = 0;
+    static NOISE = 1;
 
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
+    componentWillMount(){
+        /*ShakeEventExpo.addListener(() => {
+            Alert.alert('Shaking!!!', "aaaaaa!");
+        });*/
+        console.log(this.props.navigation.getParam('model'));
+        this.getNewLine();
+        this._subscribe();
 
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://tinder.com/?lang=en'
-    );
-  };
+    }
+
+    componentWillUnmount(){
+        //ShakeEventExpo.removeListener();
+        this._unsubscribe();
+    }
+
+    getNewLine(){
+        this.props.navigation.getParam('model').getRandomPickUpLine().then(res =>
+            this.setState({
+                status: "LOADED",
+                line: JSON.stringify(res.tweet)
+            })
+        );
+    }
+
+    _subscribe(){
+        this._subscription = Accelerometer.addListener((accData) => {
+            this.checkAccData();
+            this.prevX = this.state.accelerometerData.x;
+            this.prevY = this.state.accelerometerData.y;
+            this.prevZ = this.state.accelerometerData.z;
+            this.setState({ accelerometerData: accData });
+        });
+        Accelerometer.setUpdateInterval(100);
+    }
+
+    _unsubscribe(){
+        this._subscription && this._subscription.remove();
+        this._subscription = null;
+    }
+
+    checkAccData(){
+        const { x, y, z } = this.state.accelerometerData;
+
+        if(Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > HomeScreen.NOISE){
+            //console.log(this.state.shook);
+            if(!this.state.shook){
+                this.handleShake();
+            } else {
+                this.setState({shook: false});
+            }
+        }
+    }
+
+    handleShake(){
+        this._unsubscribe();
+        HomeScreen.vibrate();
+        this.setState({
+            shook:true,
+            status: "LOADING"});
+        console.log("shaken");
+        this.getNewLine();
+        setTimeout(() => {this._subscribe()}, 2000);
+    }
+
+
+    static vibrate(){
+        Vibration.vibrate(200);
+    }
+
+    render() {
+        let content = "loading...";
+        if(this.state.status === "LOADED") content = this.state.line.substr(1, this.state.line.length-2); //substr to trim the "" off the ends
+
+        /* Go ahead and delete ExpoConfigView and replace it with your
+         * content, we just wanted to give you a quick view of your config */
+        return (
+            <View style={styles.container}>
+                <Text style={styles.text}>{content}</Text>
+            </View>
+        );
+    }
 }
 
+
 const styles = StyleSheet.create({
+    text: {
+        fontSize: 45,
+        textAlign: 'center',
+    },
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 80,
   },
   developmentModeText: {
     marginBottom: 20,

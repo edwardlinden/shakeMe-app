@@ -7,7 +7,8 @@ import HomeScreen from '../screens/HomeScreen';
 import SandboxScreen from '../screens/SandboxScreen';
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+  Home: {screen: HomeScreen,
+      params: {'model': modelInstance}, headerMode: 'none'}
 });
 
 HomeStack.navigationOptions = {
