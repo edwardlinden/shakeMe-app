@@ -3,6 +3,7 @@ import { ExpoConfigView } from '@expo/samples';
 import ShakeEventExpo from './ShakeEventExpo';
 import { Text, StyleSheet, View, Button, Vibration, Alert } from 'react-native';
 import { Accelerometer } from 'expo';
+import modelInstance from "../Data/shakeMeModel";
 
 /*
 * Sandbox screen for playing around and learning React Native in*/
@@ -12,7 +13,9 @@ export default class SandboxScreen extends Component {
         this.state = {
             stateString: "nothing.",
             accelerometerData: {},
-            shook: false
+            shook: false,
+            status: "LOADING",
+            line: ""
         }
     }
   static navigationOptions = {
@@ -28,6 +31,8 @@ export default class SandboxScreen extends Component {
       /*ShakeEventExpo.addListener(() => {
           Alert.alert('Shaking!!!', "aaaaaa!");
       });*/
+      console.log(this.props.navigation.getParam('model'));
+      this.getNewLine();
       this._subscribe();
 
   }
@@ -35,6 +40,15 @@ export default class SandboxScreen extends Component {
   componentWillUnmount(){
       //ShakeEventExpo.removeListener();
       this._unsubscribe();
+  }
+
+  getNewLine(){
+      this.props.navigation.getParam('model').getRandomPickUpLine().then(res =>
+          this.setState({
+              status: "LOADED",
+              line: JSON.stringify(res.tweet)
+          })
+      );
   }
 
     _subscribe(){
@@ -45,7 +59,7 @@ export default class SandboxScreen extends Component {
             this.prevZ = this.state.accelerometerData.z;
             this.setState({ accelerometerData: accData });
         });
-        Accelerometer.setUpdateInterval(200);
+        Accelerometer.setUpdateInterval(100);
     }
 
     _unsubscribe(){
@@ -57,11 +71,11 @@ export default class SandboxScreen extends Component {
         const { x, y, z } = this.state.accelerometerData;
 
         if(Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > SandboxScreen.NOISE){
-            console.log(this.state.shook);
-            if(this.state.shook){
-                this.setState({shook: false});
-            } else {
+            //console.log(this.state.shook);
+            if(!this.state.shook){
                 this.handleShake();
+            } else {
+                this.setState({shook: false});
             }
         }
     }
@@ -69,9 +83,12 @@ export default class SandboxScreen extends Component {
     handleShake(){
       this._unsubscribe();
       SandboxScreen.vibrate();
-      this.setState({shook:true});
+      this.setState({
+          shook:true,
+          status: "LOADING"});
       console.log("shaken");
-      setTimeout(() => {this._subscribe()}, 2000);
+      this.getNewLine();
+      setTimeout(() => {this._subscribe()}, 5000);
     }
 
 
@@ -80,13 +97,15 @@ export default class SandboxScreen extends Component {
   }
 
   render() {
+      let content = "loading...";
+      if(this.state.status === "LOADED") content = this.state.line.substr(1, this.state.line.length-2); //substr to trim the "" off the ends
+
     /* Go ahead and delete ExpoConfigView and replace it with your
      * content, we just wanted to give you a quick view of your config */
       return (
           <View style={styles.container}>
-              <Text style={styles.text}>{Math.abs(this.prevX + this.prevY + this.prevZ - this.state.accelerometerData.x - this.state.accelerometerData.y - this.state.accelerometerData.z)}</Text>
-              <Button title={"Vibrate"} onPress={SandboxScreen.vibrate}/>
-        </View>
+              <Text style={styles.text}>{content}</Text>
+          </View>
   );
   }
 }

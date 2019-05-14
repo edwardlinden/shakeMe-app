@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
-
+import modelInstance from "../Data/shakeMeModel";
 import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import SandboxScreen from '../screens/SandboxScreen';
@@ -26,7 +26,7 @@ HomeStack.navigationOptions = {
 
 
 const SandboxStack = createStackNavigator({
-  Settings: SandboxScreen,
+  Settings: {screen: SandboxScreen, params: {'model': modelInstance}},
 });
 
 SandboxStack.navigationOptions = {
