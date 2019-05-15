@@ -1,6 +1,6 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
+import {createStackNavigator, createBottomTabNavigator, Navigation} from 'react-navigation';
 import modelInstance from "../Data/shakeMeModel";
 import TabBarIcon from '../components/TabBarIcon';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,12 +16,13 @@ HomeStack.navigationOptions = {
   tabBarLabel: 'Pick-Up',
   tabBarOptions: {
       activeTintColor: '#ff2f43',
-      inactiveTintColor: '#ff2f43',
+      inactiveTintColor: '#fe8d99',
+      style: {backgroundColor: '#ffe6e8'},
   },
   tabBarIcon: ({ focused }) => (
     <Ionicons
       focused={focused}
-      color="#ff2f43"
+      color={focused?"#ff2f43":'#fe8d99'}
       size={28}
       name={
         Platform.OS === 'ios'
@@ -41,12 +42,13 @@ SandboxStack.navigationOptions = {
   tabBarLabel: 'Sandbox',
     tabBarOptions: {
         activeTintColor: '#ff2f43',
-        inactiveTintColor: '#ff2f43',
+        inactiveTintColor: '#fe8d99',
+        style: {backgroundColor: '#ffe6e8'},
     },
     tabBarIcon: ({ focused }) => (
         <Ionicons
             focused={focused}
-            color="#ff2f43"
+            color={focused?"#ff2f43":'#fe8d99'}
             size={28}
             name={
                 Platform.OS === 'ios'
@@ -60,4 +62,7 @@ SandboxStack.navigationOptions = {
 export default createBottomTabNavigator({
   HomeStack,
   SandboxStack,
+},
+{
+    style: {backgroundColor: '#00e6e8'}
 });

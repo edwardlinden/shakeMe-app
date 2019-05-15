@@ -12,6 +12,11 @@ export default class HomeScreen extends Component {
             status: "LOADING",
             line: ""
         }
+        this.vibrate = this.vibrate.bind(this);
+        this.getNewLine = this.getNewLine.bind(this);
+        this.handleShake = this.handleShake.bind(this);
+        this._subscribe = this._subscribe.bind(this);
+        this.checkAccData = this.checkAccData.bind(this);
     }
     static navigationOptions = {
         header: null
@@ -76,7 +81,7 @@ export default class HomeScreen extends Component {
 
     handleShake(){
         this._unsubscribe();
-        HomeScreen.vibrate();
+        this.vibrate();
         this.setState({
             shook:true,
             status: "LOADING"});
@@ -86,7 +91,7 @@ export default class HomeScreen extends Component {
     }
 
 
-    static vibrate(){
+    vibrate(){
         Vibration.vibrate(200);
     }
 
@@ -99,7 +104,8 @@ export default class HomeScreen extends Component {
         return (
             <LinearGradient style={styles.container} colors={['#ff5263', '#ffd6d9']}>
                 <LinearGradient
-                    colors={['#ffd6d9', '#ff5263']}>
+                    style={styles.pickupLineBox}
+                    colors={['#ff8b94', '#ff5263']}>
                     <Text style={styles.text}>{content}</Text>
                 </LinearGradient>
             </LinearGradient>
@@ -113,12 +119,19 @@ const styles = StyleSheet.create({
         fontSize: 45,
         textAlign: 'center',
         color: 'white',
+        padding: 10,
     },
   container: {
     flex: 1,
-    paddingTop: 80,
-    paddingLeft: 30,
-    paddingRight: 30,
+
+  },
+  pickupLineBox: {
+    margin: 30,
+    marginTop: 80,
+    borderColor: '#ffffff',
+    borderWidth: 0,
+    borderRadius: 30,
+      elevation: 25,
   },
   developmentModeText: {
     marginBottom: 20,

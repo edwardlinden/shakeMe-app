@@ -16,6 +16,11 @@ export default class SandboxScreen extends Component {
             status: "LOADING",
             line: ""
         }
+        this.vibrate = this.vibrate.bind(this);
+        this.getNewLine = this.getNewLine.bind(this);
+        this.handleShake = this.handleShake.bind(this);
+        this._subscribe = this._subscribe.bind(this);
+        this.checkAccData = this.checkAccData.bind(this);
     }
   static navigationOptions = {
     title: 'sandbox',
@@ -30,9 +35,9 @@ export default class SandboxScreen extends Component {
       /*ShakeEventExpo.addListener(() => {
           Alert.alert('Shaking!!!', "aaaaaa!");
       });*/
-      console.log(this.props.navigation.getParam('model'));
+      //console.log(this.props.navigation.getParam('model'));
       this.getNewLine();
-      this._subscribe();
+      //this._subscribe();
 
   }
 
@@ -81,7 +86,7 @@ export default class SandboxScreen extends Component {
 
     handleShake(){
       this._unsubscribe();
-      SandboxScreen.vibrate();
+      this.vibrate();
       this.setState({
           shook:true,
           status: "LOADING"});
@@ -91,7 +96,7 @@ export default class SandboxScreen extends Component {
     }
 
 
-  static vibrate(){
+  vibrate(){
       Vibration.vibrate(200);
   }
 
@@ -103,7 +108,7 @@ export default class SandboxScreen extends Component {
      * content, we just wanted to give you a quick view of your config */
       return (
           <View style={styles.container}>
-              <Text style={styles.text}>{content}</Text>
+              <Text style={styles.text}>{content} note: shaking is turned off in sandbox</Text>
           </View>
   );
   }
