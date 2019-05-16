@@ -27,9 +27,6 @@ export default class HomeScreen extends Component {
     static NOISE = 1;
 
     componentWillMount(){
-        /*ShakeEventExpo.addListener(() => {
-            Alert.alert('Shaking!!!', "aaaaaa!");
-        });*/
         console.log(this.props.navigation.getParam('model'));
         this.getNewLine();
         this._subscribe();
@@ -131,7 +128,7 @@ const styles = StyleSheet.create({
     borderColor: '#ffffff',
     borderWidth: 0,
     borderRadius: 30,
-      elevation: 25,
+    elevation: 25,
   },
   developmentModeText: {
     marginBottom: 20,
