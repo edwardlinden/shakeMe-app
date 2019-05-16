@@ -9,5 +9,4 @@ The Navbar at the bottom is the MainTabNavigator in the navigation directory.
 
 Cheat-sheet for ionicons: https://ionicons.com/cheatsheet.html
 
-
 Data model can be found in the Data/shakeMeModel. 

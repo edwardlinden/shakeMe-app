@@ -1,24 +1,33 @@
 import React from 'react';
 import { Platform } from 'react-native';
-import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
-
+import {createStackNavigator, createBottomTabNavigator, Navigation} from 'react-navigation';
+import modelInstance from "../Data/shakeMeModel";
 import TabBarIcon from '../components/TabBarIcon';
+import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
 import SandboxScreen from '../screens/SandboxScreen';
 
 const HomeStack = createStackNavigator({
-  Home: HomeScreen,
+  Home: {screen: HomeScreen,
+      params: {'model': modelInstance}, headerMode: 'none'}
 });
 
 HomeStack.navigationOptions = {
   tabBarLabel: 'Pick-Up',
+  tabBarOptions: {
+      activeTintColor: '#ff2f43',
+      inactiveTintColor: '#fe8d99',
+      style: {backgroundColor: '#ffe6e8'},
+  },
   tabBarIcon: ({ focused }) => (
-    <TabBarIcon
+    <Ionicons
       focused={focused}
+      color={focused?"#ff2f43":'#fe8d99'}
+      size={28}
       name={
         Platform.OS === 'ios'
-          ? `ios-information-circle${focused ? '' : '-outline'}`
-          : 'md-information-circle'
+          ? `ios-albums`
+          : 'md-albums'
       }
     />
   ),
@@ -26,20 +35,34 @@ HomeStack.navigationOptions = {
 
 
 const SandboxStack = createStackNavigator({
-  Settings: SandboxScreen,
+  Settings: {screen: SandboxScreen, params: {'model': modelInstance}},
 });
 
 SandboxStack.navigationOptions = {
   tabBarLabel: 'Sandbox',
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === 'ios' ? 'ios-construct' : 'md-construct'}
-    />
-  ),
+    tabBarOptions: {
+        activeTintColor: '#ff2f43',
+        inactiveTintColor: '#fe8d99',
+        style: {backgroundColor: '#ffe6e8'},
+    },
+    tabBarIcon: ({ focused }) => (
+        <Ionicons
+            focused={focused}
+            color={focused?"#ff2f43":'#fe8d99'}
+            size={28}
+            name={
+                Platform.OS === 'ios'
+                    ? `ios-star-outline`
+                    : 'md-star-outline'
+            }
+        />
+    ),
 };
 
 export default createBottomTabNavigator({
   HomeStack,
   SandboxStack,
+},
+{
+    style: {backgroundColor: '#00e6e8'}
 });
