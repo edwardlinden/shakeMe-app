@@ -30,11 +30,16 @@ class shakeMeModel extends ObservableModel {
 
   getPickupLineById(id) {
     let lines;
-    this.getAllLines().then(res => lines = res);
-
-    for(let i; i < lines.length; i++) {
-      if(lines[i]._id == id) return lines[i]; //unless id is always a string, do not change to ===. _id in API is a string.
+    this.getAllLines().then(res => {
+      lines = res;
+    for(let i = 0; i < lines.length; i++) {
+      console.log("evaluating id: ", lines[i]._id);
+        if (lines[i]._id == id) { //unless id is always a string, do not change to ===. _id in API is a string.
+          console.log("found! ", lines[i]);
+          return lines[i];
+        }
     }
+    })
   }
 
   processResponse(response) {
