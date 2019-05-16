@@ -20,7 +20,7 @@ export default class HomeScreen extends Component {
     }
     static navigationOptions = {
         header: null
-    }
+    };
     prevX = 0;
     prevY = 0;
     prevZ = 0;
@@ -39,21 +39,38 @@ export default class HomeScreen extends Component {
     }
 
     getNewLine(){
-        this.props.navigation.getParam('model').getRandomPickUpLine().then(res =>
+        try {
+            this.props.navigation.getParam('model').getRandomPickUpLine().then(res => {
+                if (res.tweet !== undefined) { //There is (at least) one empty entry in the API.
+                    this.setState({
+                        status: "LOADED",
+                        line: JSON.stringify(res.tweet)
+                    });
+                }
+                else {
+                    this.setState({
+                            status: "LOADED",
+                            line: " If you were a potato, you'd be a really nice potato. "
+                        })
+                }
+            });
+        }
+        catch (e) {
+            console.log(e);
             this.setState({
-                status: "LOADED",
-                line: JSON.stringify(res.tweet)
+                status: "ERROR"
             })
-        );
+        }
     }
 
-    _subscribe(){
+    _subscribe() {
         this._subscription = Accelerometer.addListener((accData) => {
-            this.checkAccData();
-            this.prevX = this.state.accelerometerData.x;
-            this.prevY = this.state.accelerometerData.y;
-            this.prevZ = this.state.accelerometerData.z;
-            this.setState({ accelerometerData: accData });
+            if (!this.checkAccData()) {
+                this.prevX = this.state.accelerometerData.x;
+                this.prevY = this.state.accelerometerData.y;
+                this.prevZ = this.state.accelerometerData.z;
+                this.setState({accelerometerData: accData});
+            }
         });
         Accelerometer.setUpdateInterval(100);
     }
@@ -65,24 +82,23 @@ export default class HomeScreen extends Component {
 
     checkAccData(){
         const { x, y, z } = this.state.accelerometerData;
-
-        if(Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > HomeScreen.NOISE){
+        let maths = Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z);
+        if(maths > HomeScreen.NOISE){
             //console.log(this.state.shook);
-            if(!this.state.shook){
+            //console.log("shaken");
+                console.log("handling shake");
                 this.handleShake();
-            } else {
-                this.setState({shook: false});
-            }
+
         }
+        return false;
     }
 
-    handleShake(){
+    async handleShake(){
         this._unsubscribe();
         this.vibrate();
         this.setState({
             shook:true,
             status: "LOADING"});
-        console.log("shaken");
         this.getNewLine();
         setTimeout(() => {this._subscribe()}, 2000);
     }
@@ -95,6 +111,7 @@ export default class HomeScreen extends Component {
     render() {
         let content = "loading...";
         if(this.state.status === "LOADED") content = this.state.line.substr(1, this.state.line.length-2); //substr to trim the "" off the ends
+        if(this.state.status === "ERROR") content = "error :(";
 
         /* Go ahead and delete ExpoConfigView and replace it with your
          * content, we just wanted to give you a quick view of your config */
