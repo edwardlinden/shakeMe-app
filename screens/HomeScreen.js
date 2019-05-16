@@ -1,123 +1,156 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, Button, Vibration, Platform } from 'react-native';
-import { Accelerometer, LinearGradient } from 'expo';
+import { Text, StyleSheet, View, Button, Vibration, Platform, Image } from 'react-native';
+import { Accelerometer, LinearGradient, } from 'expo';
+
 
 export default class HomeScreen extends Component {
-    constructor(props){
-        super(props);
-        this.state = {
-            stateString: "nothing.",
-            accelerometerData: {},
-            shook: false,
-            status: "LOADING",
-            line: ""
-        }
-        this.vibrate = this.vibrate.bind(this);
-        this.getNewLine = this.getNewLine.bind(this);
-        this.handleShake = this.handleShake.bind(this);
-        this._subscribe = this._subscribe.bind(this);
-        this.checkAccData = this.checkAccData.bind(this);
+  constructor(props) {
+    super(props);
+    this.state = {
+      stateString: "nothing.",
+      accelerometerData: {},
+      shook: false,
+      status: "LOADING",
+      line: ""
     }
-    static navigationOptions = {
-        header: null
+    this.vibrate = this.vibrate.bind(this);
+    this.getNewLine = this.getNewLine.bind(this);
+    this.handleShake = this.handleShake.bind(this);
+    this._subscribe = this._subscribe.bind(this);
+    this.checkAccData = this.checkAccData.bind(this);
+  }
+  static navigationOptions = {
+    header: null
+  }
+  prevX = 0;
+  prevY = 0;
+  prevZ = 0;
+  static NOISE = 1;
+
+  componentWillMount() {
+    console.log(this.props.navigation.getParam('model'));
+    this.getNewLine();
+    this._subscribe();
+
+  }
+
+  componentWillUnmount() {
+    //ShakeEventExpo.removeListener();
+    this._unsubscribe();
+  }
+
+  getNewLine() {
+    this.props.navigation.getParam('model').getRandomPickUpLine().then(res =>
+      this.setState({
+        status: "LOADED",
+        line: JSON.stringify(res.tweet)
+      })
+    );
+  }
+
+  _subscribe() {
+    this._subscription = Accelerometer.addListener((accData) => {
+      this.checkAccData();
+      this.prevX = this.state.accelerometerData.x;
+      this.prevY = this.state.accelerometerData.y;
+      this.prevZ = this.state.accelerometerData.z;
+      this.setState({ accelerometerData: accData });
+    });
+    Accelerometer.setUpdateInterval(100);
+  }
+
+  _unsubscribe() {
+    this._subscription && this._subscription.remove();
+    this._subscription = null;
+  }
+
+  checkAccData() {
+    const { x, y, z } = this.state.accelerometerData;
+
+    if (Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > HomeScreen.NOISE) {
+      //console.log(this.state.shook);
+      if (!this.state.shook) {
+        this.handleShake();
+      } else {
+        this.setState({ shook: false });
+      }
     }
-    prevX = 0;
-    prevY = 0;
-    prevZ = 0;
-    static NOISE = 1;
+  }
 
-    componentWillMount(){
-        console.log(this.props.navigation.getParam('model'));
-        this.getNewLine();
-        this._subscribe();
+  handleShake() {
+    this._unsubscribe();
+    this.vibrate();
+    this.setState({
+      shook: true,
+      status: "LOADING"
+    });
+    console.log("shaken");
+    this.getNewLine();
+    setTimeout(() => { this._subscribe() }, 2000);
+  }
 
+
+  vibrate() {
+    Vibration.vibrate(200);
+  }
+
+  render() {
+
+    let content = "";
+    if (this.state.status === "LOADED") {
+      content = this.state.line.substr(1, this.state.line.length - 2);
+      //substr to trim the "" off the ends
+      return (
+        <LinearGradient style={styles.container} colors={['#FF182E', '#ffe4e6']}>
+          <LinearGradient
+            style={styles.pickupLineBox}
+            colors={['#ff7481', '#FF182E']}>
+            <Text style={styles.text}>{content}</Text>
+          </LinearGradient>
+          <View style={styles.welcomeContainer}>
+            <Image
+              source={
+                __DEV__
+                  ? require('../assets/images/robot-dev.png')
+                  : require('../assets/images/robot-prod.png')
+              }
+              style={styles.welcomeImage}
+            />
+          </View>
+        </LinearGradient>
+
+      );
     }
-
-    componentWillUnmount(){
-        //ShakeEventExpo.removeListener();
-        this._unsubscribe();
-    }
-
-    getNewLine(){
-        this.props.navigation.getParam('model').getRandomPickUpLine().then(res =>
-            this.setState({
-                status: "LOADED",
-                line: JSON.stringify(res.tweet)
-            })
-        );
-    }
-
-    _subscribe(){
-        this._subscription = Accelerometer.addListener((accData) => {
-            this.checkAccData();
-            this.prevX = this.state.accelerometerData.x;
-            this.prevY = this.state.accelerometerData.y;
-            this.prevZ = this.state.accelerometerData.z;
-            this.setState({ accelerometerData: accData });
-        });
-        Accelerometer.setUpdateInterval(100);
-    }
-
-    _unsubscribe(){
-        this._subscription && this._subscription.remove();
-        this._subscription = null;
-    }
-
-    checkAccData(){
-        const { x, y, z } = this.state.accelerometerData;
-
-        if(Math.abs(this.prevX + this.prevY + this.prevZ - x - y - z) > HomeScreen.NOISE){
-            //console.log(this.state.shook);
-            if(!this.state.shook){
-                this.handleShake();
-            } else {
-                this.setState({shook: false});
-            }
-        }
-    }
-
-    handleShake(){
-        this._unsubscribe();
-        this.vibrate();
-        this.setState({
-            shook:true,
-            status: "LOADING"});
-        console.log("shaken");
-        this.getNewLine();
-        setTimeout(() => {this._subscribe()}, 2000);
-    }
-
-
-    vibrate(){
-        Vibration.vibrate(200);
-    }
-
-    render() {
-        let content = "loading...";
-        if(this.state.status === "LOADED") content = this.state.line.substr(1, this.state.line.length-2); //substr to trim the "" off the ends
-
+    else
         /* Go ahead and delete ExpoConfigView and replace it with your
-         * content, we just wanted to give you a quick view of your config */
-        return (
-            <LinearGradient style={styles.container} colors={['#ff5263', '#ffd6d9']}>
-                <LinearGradient
-                    style={styles.pickupLineBox}
-                    colors={['#ff8b94', '#ff5263']}>
-                    <Text style={styles.text}>{content}</Text>
-                </LinearGradient>
-            </LinearGradient>
-        );
+         * content, we just wanted to give you a quick view of your config */ {
+      return (
+        <LinearGradient style={styles.container} colors={['#FF182E', '#ffe4e6']}>
+          <View style={styles.welcomeContainer}>
+            <Image
+              source={
+                __DEV__
+                  ? require('../assets/images/robot-dev.png')
+                  : require('../assets/images/robot-prod.png')
+              }
+              style={styles.welcomeImage}
+            />
+          </View>
+        </LinearGradient>
+      );
     }
+
+  }
 }
 
 
 const styles = StyleSheet.create({
-    text: {
-        fontSize: 45,
-        textAlign: 'center',
-        color: 'white',
-        padding: 10,
-    },
+  text: {
+    fontSize: 45,
+    textAlign: 'center',
+    color: 'white',
+    padding: 10,
+  },
   container: {
     flex: 1,
 
@@ -142,8 +175,8 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginTop: 10,
     marginBottom: 20,
+ 
   },
   welcomeImage: {
     width: 100,
