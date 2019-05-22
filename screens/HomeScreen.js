@@ -110,16 +110,17 @@ export default class HomeScreen extends Component {
   render() {
       //substr to trim the "" off the ends
       return (
+        <>
         <LinearGradient style={styles.container} colors={['#FF182E', '#ffe4e6']}>
           {this.renderPickup()}
-          <View style={styles.welcomeContainer}>
-              <Image
-                style={styles.shakeGif}
-                source={require('../assets/images/giphy.gif')}
-                resizeMode="contain"/>
-          </View>
         </LinearGradient>
-
+          <View style={styles.welcomeContainer}>
+            <Image
+              style={styles.shakeGif}
+              source={require('../assets/images/giphy.gif')}
+              resizeMode="contain"/>
+            </View>
+        </>
       );
   }
 }
@@ -134,10 +135,8 @@ const styles = StyleSheet.create({
   },
   shakeGif: {
     width: 200,
-    // position: 'absolute',
-    // bottom: 0
-    justifyContent: 'flex-end',
-   
+    position: 'absolute',
+    bottom:-80
 
   },
   container: {
@@ -164,7 +163,6 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     alignItems: 'center',
-    marginBottom: 20,
  
   },
   welcomeImage: {
