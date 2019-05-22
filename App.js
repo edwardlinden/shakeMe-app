@@ -11,7 +11,7 @@ export default class App extends React.Component {
 
   componentDidMount(){
     console.log("REEEEEEEEEEEEEEENDER");
-    backendModel.signIn("offieeee@gmail.com","testtesting").then(backendModel.test()).then(backendModel.signOut());
+    backendModel.signIn("test@testson.se","testtesting").then(backendModel.test()).then(backendModel.signOut());
   }
 
   render() {  
