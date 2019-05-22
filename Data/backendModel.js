@@ -17,17 +17,25 @@ const firebaseConfig = {
   projectId: "shakeme-app"
 };
  
+uID = null; 
 
 class BackendModel {
 
   constructor() {
     firebase.initializeApp(firebaseConfig);
     this.initFirebaseAuth(res=>{});
-    
+     
   }
-
+ 
   signIn= async(email, password) => { 
-    firebase.auth().signInWithEmailAndPassword(email, password);
+    return firebase.auth().signInWithEmailAndPassword(email, password).then(res=>{
+      uID=firebase.auth().currentUser.uid;
+      return true;
+    }); 
+  /*  firebase.firestore().collection('users').doc(uid).get().then(res=>{
+      if()
+    })*/
+    
   }
 
 
@@ -96,7 +104,7 @@ upvote(id){
   return firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
     if(!res.exists){
       let create = this.create(id, 'pickup-lines');
-      return create.then(res=> {return upvote(id)});
+      return create.then(res=> {return this.upvote(id)});
 
     }else{ 
       let new_upvotes = res.data().upvotes +1;
@@ -134,7 +142,7 @@ downvote(id){
   return firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
     if(!res.exists){
       let create = this.create(id, 'pickup-lines');
-      return create.then(res=> {return downvote(id)});
+      return create.then(res=> {return this.downvote(id)});
     }else{
       let new_downvotes = res.data().downvotes + 1;
       let db_update = firebase.firestore().collection('pickup-lines').doc(id).update({downvotes: new_downvotes})
@@ -143,28 +151,62 @@ downvote(id){
   });
 }
 
-favourite(){
-  firebase.auth().onAuthStateChanged(res=>{
-    let uid = res.uid;
-    firebase.firestore().collection('users').doc(uid).get().then(res =>{
-      if(!res.exists){
-        console.log("No such user");
+isInFavourite(id, doc){
+  console.log("HEEEY");
+  if(!doc.exists){
+    doc = firebase.firestore().collection('users').doc(uID).get();
+  }
+  return doc.then(res=>{ 
+    if(!res.exists){
+      return false
+    }else{
+      let favourites = res.data().favourites;
+      let bool = false;
+      for(f in favourites){
+        console.log(favourites[f]);
+        console.log(id);
+        if(favourites[f]===id){
+          bool = true;
+          break;
+        }
       }
-      else{
-
-      }
-    })
+      console.log(bool);
+      return bool;
+    }
   });
-  
 }
 
 
+//if exists in db remove, if not exists add
+favourite(id){
+  let doc = firebase.firestore().collection('users').doc(uID).get();
+  return doc.then(res=>{
+    if(!res.exists){
+      let create=this.create(uID, 'users');
+      return create.then(res=>{return this.favourite()})
+    }else{
+      return this.isInFavourite(id, doc).then(res2=>{
+        let new_doc = res.data().favourites;
+        if(res2===false){
+          new_doc.push(id);
+        }else{
+          new_doc=new_doc.filter(function(val){
+            return val !== id;
+          });
+        }
+        return firebase.firestore().collection('users').doc(uID).update({favourites: new_doc}).then(res=>{return true});
+      }); 
+    }
+  });
+} 
+
+ 
   test(){
     console.log("test");
     if(this.isUserSignedIn()){
     }
     firebase.firestore().collection('pickup-lines').doc("something").set({name: "LA"});
-    
+     
 
 }
 }
