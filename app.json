@@ -23,7 +23,17 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shakeapp.expo.googlesingin",
+      "config":{
+        "googleSignIn":{
+          "reservedClientId":"com.googleusercontent.apps.167067609377-uova9oje9oddrbmqvuruqgkaele3la2k",
+        }
+      }
+    },
+    "android":{
+      "package":"com.shakeapp.expo.googlesingin",
+      "googleServiceFile": "./google-services.json"
     }
   }
 }

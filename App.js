@@ -2,13 +2,24 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import backendModel from './Data/backendModel'
 
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
   };
 
-  render() {
+  componentDidMount(){
+    console.log("REEEEEEEEEEEEEEENDER");
+    backendModel.signIn("test@testson.se","testtesting");
+    //backendModel.upvote('56d7bea278c41dff2872fe0a');
+    backendModel.downvote('56d7bea278c41dff2872fe0a');
+    //backendModel.upvote('something');
+    //backendModel.test();
+  }
+
+  render() {  
+    
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
         <AppLoading
