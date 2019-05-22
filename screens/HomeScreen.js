@@ -89,57 +89,38 @@ export default class HomeScreen extends Component {
     setTimeout(() => { this._subscribe() }, 2000);
   }
 
-
   vibrate() {
     Vibration.vibrate(200);
   }
 
-  render() {
-
+  renderPickup() {
     let content = "";
     if (this.state.status === "LOADED") {
       content = this.state.line.substr(1, this.state.line.length - 2);
+    return (
+    <LinearGradient
+    style={styles.pickupLineBox}
+    colors={['#ff7481', '#FF182E']}>
+    <Text style={styles.text}>{content}</Text>
+    </LinearGradient>
+    )
+   } 
+  }
+
+  render() {
       //substr to trim the "" off the ends
       return (
         <LinearGradient style={styles.container} colors={['#FF182E', '#ffe4e6']}>
-          <LinearGradient
-            style={styles.pickupLineBox}
-            colors={['#ff7481', '#FF182E']}>
-            <Text style={styles.text}>{content}</Text>
-          </LinearGradient>
+          {this.renderPickup()}
           <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
+              <Image
+                style={styles.shakeGif}
+                source={require('../assets/images/giphy.gif')}
+                resizeMode="contain"/>
           </View>
         </LinearGradient>
 
       );
-    }
-    else
-        /* Go ahead and delete ExpoConfigView and replace it with your
-         * content, we just wanted to give you a quick view of your config */ {
-      return (
-        <LinearGradient style={styles.container} colors={['#FF182E', '#ffe4e6']}>
-          <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
-          </View>
-        </LinearGradient>
-      );
-    }
-
   }
 }
 
@@ -150,6 +131,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     padding: 10,
+  },
+  shakeGif: {
+    width: 200,
+    // position: 'absolute',
+    // bottom: 0
+    justifyContent: 'flex-end',
+   
+
   },
   container: {
     flex: 1,
