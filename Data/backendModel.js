@@ -22,7 +22,7 @@ class BackendModel {
 
   constructor() {
     firebase.initializeApp(firebaseConfig);
-    this.initFirebaseAuth(res=>{console.log("\n" ,res)});
+    this.initFirebaseAuth(res=>{});
     
   }
 
@@ -91,17 +91,60 @@ class BackendModel {
     });
   }*/
 
+upvote(id){
+  firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
+    if(!res.exists){
+      console.log("No such document");
+    }else{
+      let new_upvotes = res.data().upvotes +1;
+      firebase.firestore().collection('pickup-lines').doc(id).update({upvotes: new_upvotes})
+    }
+  });
+
+}
+
+removeUpvote(id){
+  firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
+    if(!res.exists){
+      console.log("No such document");
+    }else{
+      let new_upvotes = res.data().upvotes -1 < 0 ? 0 : res.data().upvotes -1;
+      firebase.firestore().collection('pickup-lines').doc(id).update({upvotes: new_upvotes})
+    }
+  });
+}
+
+removeDownvote(id){
+  firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
+    if(!res.exists){
+      console.log("No such document");
+    }else{
+      let new_downvotes = res.data().downvotes -1 < 0 ? 0 : res.data().downvotes -1;
+      firebase.firestore().collection('pickup-lines').doc(id).update({downvotes: new_downvotes})
+    }
+  });
+}
+
+downvote(id){
+  firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
+    if(!res.exists){
+      console.log("No such document");
+    }else{
+      let new_downvotes = res.data().downvotes + 1;
+      firebase.firestore().collection('pickup-lines').doc(id).update({downvotes: new_downvotes})
+    }
+  });
+}
 
 
   test(){
     console.log("test");
     if(this.isUserSignedIn()){
     }
-    return firebase.firestore().collection('users').add({
-      email: "something" 
-    });
-  }
+    firebase.firestore().collection('pickup-lines').doc("something").set({name: "LA"});
+    
 
+}
 }
 
 
