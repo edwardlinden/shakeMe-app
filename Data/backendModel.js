@@ -28,8 +28,6 @@ class BackendModel {
 
   signIn= async(email, password) => { 
     firebase.auth().signInWithEmailAndPassword(email, password);
-
-
   }
 
 
@@ -77,27 +75,34 @@ class BackendModel {
     return !!firebase.auth().currentUser;
   }
 
-  /*
-  // Saves a new message on the Cloud Firestore.
-  saveMessage(messageText) {
-    // Add a new message entry to the Firebase database.
-    return firebase.firestore().collection('messages').add({
-      name: getUserName(),
-      text: messageText,
-      profilePicUrl: getProfilePicUrl(),
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).catch(function(error) {
-      console.error('Error writing new message to Firebase Database', error);
+create(id, col){
+  if(col === 'users'){
+    firebase.firestore().collection(col).doc(id).set({
+      favourites: [], 
+      downvotes: [],
+      upvotes: []
     });
-  }*/
+  }else{
+    firebase.firestore().collection(col).doc(id).set({
+      favourite: [], 
+      downvotes: 0,
+      upvotes: 0
+    });
+  }
+  return true;
+}
 
 upvote(id){
-  firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
+  return firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
     if(!res.exists){
-      console.log("No such document");
-    }else{
+      let create = this.create(id, 'pickup-lines');
+      return create.then(res=> {return upvote(id)});
+
+    }else{ 
       let new_upvotes = res.data().upvotes +1;
-      firebase.firestore().collection('pickup-lines').doc(id).update({upvotes: new_upvotes})
+      let db_update = firebase.firestore().collection('pickup-lines').doc(id).update({upvotes: new_upvotes})
+      return db_update.then(res => {return true});
+      
     }
   });
 
@@ -126,14 +131,31 @@ removeDownvote(id){
 }
 
 downvote(id){
-  firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
+  return firebase.firestore().collection('pickup-lines').doc(id).get().then(res=>{
     if(!res.exists){
-      console.log("No such document");
+      let create = this.create(id, 'pickup-lines');
+      return create.then(res=> {return downvote(id)});
     }else{
       let new_downvotes = res.data().downvotes + 1;
-      firebase.firestore().collection('pickup-lines').doc(id).update({downvotes: new_downvotes})
+      let db_update = firebase.firestore().collection('pickup-lines').doc(id).update({downvotes: new_downvotes})
+      return db_update.then(res => {return true});
     }
   });
+}
+
+favourite(){
+  firebase.auth().onAuthStateChanged(res=>{
+    let uid = res.uid;
+    firebase.firestore().collection('users').doc(uid).get().then(res =>{
+      if(!res.exists){
+        console.log("No such user");
+      }
+      else{
+
+      }
+    })
+  });
+  
 }
 
 

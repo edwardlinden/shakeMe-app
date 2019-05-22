@@ -9,13 +9,15 @@ export default class App extends React.Component {
     isLoadingComplete: false,
   };
 
-  componentDidMount(){
+  async componentDidMount(){
     console.log("REEEEEEEEEEEEEEENDER");
     backendModel.signIn("test@testson.se","testtesting");
     //backendModel.upvote('56d7bea278c41dff2872fe0a');
-    backendModel.downvote('56d7bea278c41dff2872fe0a');
+    //backendModel.downvote('56d7bea278c41dff2872fe0a');
     //backendModel.upvote('something');
     //backendModel.test();
+    //backendModel.favourite();
+    backendModel.upvote("TESTINGg").then(res=>{console.log("app", res)});
   }
 
   render() {  
