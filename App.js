@@ -2,13 +2,20 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import backendModel from './Data/backendModel'
 
 export default class App extends React.Component {
   state = {
     isLoadingComplete: false,
   };
 
-  render() {
+  componentDidMount(){
+    console.log("REEEEEEEEEEEEEEENDER");
+    backendModel.signIn("offieeee@gmail.com","testtesting").then(backendModel.test()).then(backendModel.signOut());
+  }
+
+  render() {  
+    
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
         <AppLoading
