@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, Button, Vibration, Platform, Image } from 'react-native';
+import { Text, StyleSheet, View, Vibration, Platform, Image } from 'react-native';
 import { Accelerometer, LinearGradient } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
+import { Button } from 'react-native-elements';
 
 export default class HomeScreen extends Component {
     constructor(props){
@@ -138,6 +139,7 @@ export default class HomeScreen extends Component {
                 <Button
                     onPress={this.handleUpvote}
                     title="Learn More"
+                    icon={{name: 'notifications', size: 90}}
                     color="#841584"
                     accessibilityLabel="Learn more about this purple button"
                 />
