@@ -2,6 +2,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import {createStackNavigator, createBottomTabNavigator, Navigation} from 'react-navigation';
 import modelInstance from "../Data/shakeMeModel";
+import backEndInstance from "../Data/backendModel";
 import TabBarIcon from '../components/TabBarIcon';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../screens/HomeScreen';
@@ -9,7 +10,7 @@ import SandboxScreen from '../screens/SandboxScreen';
 
 const HomeStack = createStackNavigator({
   Home: {screen: HomeScreen,
-      params: {'model': modelInstance}, headerMode: 'none'}
+      params: {'model': modelInstance, 'backend': backEndInstance}, headerMode: 'none'}
 });
 
 HomeStack.navigationOptions = {

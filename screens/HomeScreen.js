@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Text, StyleSheet, View, Button, Vibration, Platform, Image } from 'react-native';
 import { Accelerometer, LinearGradient } from 'expo';
+import { Ionicons } from '@expo/vector-icons';
 
 export default class HomeScreen extends Component {
     constructor(props){
@@ -10,13 +11,15 @@ export default class HomeScreen extends Component {
             accelerometerData: {},
             shook: false,
             status: "LOADING",
-            line: ""
+            line: "",
+            id: 0
         }
         this.vibrate = this.vibrate.bind(this);
         this.getNewLine = this.getNewLine.bind(this);
         this.handleShake = this.handleShake.bind(this);
         this._subscribe = this._subscribe.bind(this);
         this.checkAccData = this.checkAccData.bind(this);
+        this.handleUpvote = this.handleUpvote.bind(this);
     }
     static navigationOptions = {
         header: null
@@ -28,6 +31,7 @@ export default class HomeScreen extends Component {
 
     componentWillMount(){
         console.log(this.props.navigation.getParam('model'));
+        console.log(this.props.navigation.getParam('backend'));
         this.getNewLine();
         this._subscribe();
 
@@ -44,13 +48,15 @@ export default class HomeScreen extends Component {
                 if (res.tweet !== undefined) { //There is (at least) one empty entry in the API.
                     this.setState({
                         status: "LOADED",
-                        line: JSON.stringify(res.tweet)
+                        line: JSON.stringify(res.tweet),
+                        id: JSON.stringify(res._id)
                     });
                 }
                 else {
                     this.setState({
                             status: "LOADED",
-                            line: " If you were a potato, you'd be a really nice potato. "
+                            line: " If you were a potato, you'd be a really nice potato. ",
+                            id: JSON.stringify(res._id)
                         })
                 }
             });
@@ -86,7 +92,7 @@ export default class HomeScreen extends Component {
         if(maths > HomeScreen.NOISE){
             //console.log(this.state.shook);
             //console.log("shaken");
-                console.log("handling shake");
+                //console.log("handling shake");
                 this.handleShake();
 
         }
@@ -108,11 +114,18 @@ export default class HomeScreen extends Component {
         Vibration.vibrate(200);
     }
 
+    handleUpvote() {
+        console.log("Handling upvote, id: ", this.state.id);
+    }
+
     render() {
         let content = "loading...";
-        if(this.state.status === "LOADED") content = this.state.line.substr(1, this.state.line.length-2); //substr to trim the "" off the ends
+        if(this.state.status === "LOADED") {
+            content = this.state.line.substr(1, this.state.line.length - 2); //substr to trim the "" off the ends
+            //this.props.navigation.getParam('backend').upvote(this.state.id);
+            //console.log("upvoting id ", this.state.id);
+        }
         if(this.state.status === "ERROR") content = "error :(";
-
         /* Go ahead and delete ExpoConfigView and replace it with your
          * content, we just wanted to give you a quick view of your config */
         return (
@@ -122,6 +135,12 @@ export default class HomeScreen extends Component {
                     colors={['#ff8b94', '#ff5263']}>
                     <Text style={styles.text}>{content}</Text>
                 </LinearGradient>
+                <Button
+                    onPress={this.handleUpvote}
+                    title="Learn More"
+                    color="#841584"
+                    accessibilityLabel="Learn more about this purple button"
+                />
                 <Image
                     style={styles.shakeGif}
                     source={require('../assets/images/test.gif')}

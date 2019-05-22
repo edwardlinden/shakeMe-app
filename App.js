@@ -10,10 +10,10 @@ export default class App extends React.Component {
   };
 
   componentDidMount(){
-    console.log("REEEEEEEEEEEEEEENDER");
-    backendModel.signIn("test@testson.se","testtesting");
+    //console.log("REEEEEEEEEEEEEEENDER");
+    //backendModel.signIn("test@testson.se","testtesting");
     //backendModel.upvote('56d7bea278c41dff2872fe0a');
-    backendModel.downvote('56d7bea278c41dff2872fe0a');
+    //backendModel.downvote('56d7bea278c41dff2872fe0a');
     //backendModel.upvote('something');
     //backendModel.test();
   }
