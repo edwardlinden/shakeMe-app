@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, StyleSheet, View, Button, Vibration, Platform } from 'react-native';
+import { Text, StyleSheet, View, Button, Vibration, Platform, Image } from 'react-native';
 import { Accelerometer, LinearGradient } from 'expo';
 
 export default class HomeScreen extends Component {
@@ -122,6 +122,11 @@ export default class HomeScreen extends Component {
                     colors={['#ff8b94', '#ff5263']}>
                     <Text style={styles.text}>{content}</Text>
                 </LinearGradient>
+                <Image
+                    style={styles.shakeGif}
+                    source={require('../assets/images/test.gif')}
+                    resizeMode="contain"/>
+
             </LinearGradient>
         );
     }
@@ -137,6 +142,7 @@ const styles = StyleSheet.create({
     },
   container: {
     flex: 1,
+    alignItems: 'center',
 
   },
   pickupLineBox: {
@@ -147,6 +153,10 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     elevation: 25,
   },
+    shakeGif: {
+        marginTop: 50,
+        width: 200,
+    },
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
