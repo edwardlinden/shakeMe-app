@@ -117,7 +117,7 @@ export default class HomeScreen extends Component {
           <View style={styles.welcomeContainer}>
             <Image
               style={styles.shakeGif}
-              source={require('../assets/images/giphy.gif')}
+              source={require('../assets/images/shakeme3.gif')}
               resizeMode="contain"/>
             </View>
         </>
@@ -134,9 +134,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   shakeGif: {
-    width: 200,
+    width: 150,
     position: 'absolute',
-    bottom:-80
+    bottom:-200
 
   },
   container: {
