@@ -21,6 +21,7 @@ export default class HomeScreen extends Component {
         this._subscribe = this._subscribe.bind(this);
         this.checkAccData = this.checkAccData.bind(this);
         this.handleUpvote = this.handleUpvote.bind(this);
+        this.handleDownvote = this.handleDownvote.bind(this);
     }
     static navigationOptions = {
         header: null
@@ -118,6 +119,9 @@ export default class HomeScreen extends Component {
     handleUpvote() {
         console.log("Handling upvote, id: ", this.state.id);
     }
+    handleDownvote() {
+        console.log("Handling downvode, id: ", this.state.id);
+    }
 
     render() {
         let content = "loading...";
@@ -136,13 +140,23 @@ export default class HomeScreen extends Component {
                     colors={['#ff8b94', '#ff5263']}>
                     <Text style={styles.text}>{content}</Text>
                 </LinearGradient>
-                <Button
-                    onPress={this.handleUpvote}
-                    title="Learn More"
-                    icon={{name: 'notifications', size: 90}}
-                    color="#841584"
-                    accessibilityLabel="Learn more about this purple button"
-                />
+                <View style={styles.buttonContainer}>
+                    <Button
+                        onPress={this.handleUpvote}
+                        title=""
+                        icon={{name: 'thumb-up', size: 30, color: '#359f47'}}
+                        accessibilityLabel="Like"
+                        color="#ff8b94"
+                        buttonStyle={{backgroundColor: '#98dea4', borderRadius: 10, marginRight: 10}}
+                    /><Button
+                        onPress={this.handleDownvote}
+                        title=""
+                        icon={{name: 'thumb-down', size: 30, color: '#cc3245'}}
+                        accessibilityLabel="Dislike"
+                        color="#ff8b94"
+                        buttonStyle={{backgroundColor: '#ff677a', borderRadius: 10, marginRight: 10}}
+                    />
+                </View>
                 <Image
                     style={styles.shakeGif}
                     source={require('../assets/images/test.gif')}
@@ -165,6 +179,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
 
+  },
+  buttonContainer: {
+        flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
   },
   pickupLineBox: {
     margin: 30,
