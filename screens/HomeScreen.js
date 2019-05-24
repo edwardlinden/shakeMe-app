@@ -13,7 +13,9 @@ export default class HomeScreen extends Component {
             shook: false,
             status: "LOADING",
             line: "",
-            id: 0
+            id: 0,
+            upvoted: false, //TODO move this check into user or something?
+            downvoted: false
         }
         this.vibrate = this.vibrate.bind(this);
         this.getNewLine = this.getNewLine.bind(this);
@@ -117,10 +119,56 @@ export default class HomeScreen extends Component {
     }
 
     handleUpvote() {
-        console.log("Handling upvote, id: ", this.state.id);
+        let backend = this.props.navigation.getParam('backend');
+        console.log("upvoting id ", this.state.id);
+        //backend.upvote(this.state.id);
+        if(!this.state.upvoted && !this.state.downvoted) { //no votes
+            console.log("no votes, id: ", this.state.id);
+            backend.upvote(this.state.id);
+            this.setState({
+                upvoted: true
+            });
+        } else if(!this.state.upvoted && this.state.downvoted){ //has been downvoted
+            console.log("Has been downvoted, upvoting, id: ", this.state.id);
+            backend.removeDownvote(this.state.id);
+            backend.upvote(this.state.id);
+            this.setState({
+                upvoted: true,
+                downvoted: false
+            });
+        } else { //has been upvoted
+            console.log("Removing upvote, id: ", this.state.id);
+            backend.removeUpvote(this.state.id);
+            this.setState({
+                upvoted: false
+            })
+        }
     }
     handleDownvote() {
-        console.log("Handling downvode, id: ", this.state.id);
+        let backend = this.props.navigation.getParam('backend');
+        console.log("downvoting id ", this.state.id);
+        //backend.downvote(this.state.id);
+        if(!this.state.downvoted && !this.state.upvoted) { //no votes
+            console.log("no votes, id: ", this.state.id);
+            backend.downvote(this.state.id);
+            this.setState({
+                downvoted: true
+            });
+        } else if(!this.state.downvoted && this.state.upvoted){ //has been downvoted
+            console.log("Has been upvoted, downvoting, id: ", this.state.id);
+            backend.removeUpvote(this.state.id);
+            backend.downvote(this.state.id);
+            this.setState({
+                upvoted: false,
+                downvoted: true
+            });
+        } else { //has been downvoted
+            console.log("Removing downvote, id: ", this.state.id);
+            backend.removeDownvote(this.state.id);
+            this.setState({
+                downvoted: false
+            })
+        }
     }
 
     render() {
@@ -131,8 +179,9 @@ export default class HomeScreen extends Component {
             //console.log("upvoting id ", this.state.id);
         }
         if(this.state.status === "ERROR") content = "error :(";
-        /* Go ahead and delete ExpoConfigView and replace it with your
-         * content, we just wanted to give you a quick view of your config */
+        let upvoteColor = this.state.upvoted?'#359f47':'#56c969';
+        let downvoteColor = this.state.downvoted?'#cc3245':'#ff465f';
+
         return (
             <LinearGradient style={styles.container} colors={['#ff5263', '#ffd6d9']}>
                 <LinearGradient
@@ -144,14 +193,14 @@ export default class HomeScreen extends Component {
                     <Button
                         onPress={this.handleUpvote}
                         title=""
-                        icon={{name: 'thumb-up', size: 30, color: '#359f47'}}
+                        icon={{name: 'thumb-up', size: 30, color: upvoteColor}}
                         accessibilityLabel="Like"
                         color="#ff8b94"
                         buttonStyle={{backgroundColor: '#98dea4', borderRadius: 10, marginRight: 10}}
                     /><Button
                         onPress={this.handleDownvote}
                         title=""
-                        icon={{name: 'thumb-down', size: 30, color: '#cc3245'}}
+                        icon={{name: 'thumb-down', size: 30, color: downvoteColor}}
                         accessibilityLabel="Dislike"
                         color="#ff8b94"
                         buttonStyle={{backgroundColor: '#ff677a', borderRadius: 10, marginRight: 10}}
