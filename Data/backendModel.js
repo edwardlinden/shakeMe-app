@@ -17,7 +17,7 @@ const firebaseConfig = {
   projectId: "shakeme-app"
 };
  
-uID = null; 
+let uID = null;
 
 class BackendModel {
 
@@ -149,6 +149,18 @@ downvote(id){
       return db_update.then(res => {return true});
     }
   });
+}
+
+voteCounts(id){
+    return firebase.firestore().collection('pickup-lines').doc(id).get().then(res => {
+      if(!res.exists){
+        return "[0,0]";
+      } else {
+        let upvotes = res.data().upvotes;
+        let downvotes = res.data().downvotes;
+        return ("[",upvotes,",",downvotes,"]");
+      }
+    });
 }
 
 isInFavourite(id, doc){

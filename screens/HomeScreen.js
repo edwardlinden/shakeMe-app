@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, Vibration, Platform, Image } from 'react-native
 import { Accelerometer, LinearGradient } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from 'react-native-elements';
+import backEndInstance from "../Data/backendModel";
 
 export default class HomeScreen extends Component {
     constructor(props){
@@ -15,7 +16,9 @@ export default class HomeScreen extends Component {
             line: "",
             id: 0,
             upvoted: false, //TODO move this check into user or something?
-            downvoted: false
+            downvoted: false,
+            upvotes: 0,
+            downvotes: 0
         }
         this.vibrate = this.vibrate.bind(this);
         this.getNewLine = this.getNewLine.bind(this);
@@ -49,20 +52,30 @@ export default class HomeScreen extends Component {
     getNewLine(){
         try {
             this.props.navigation.getParam('model').getRandomPickUpLine().then(res => {
-                if (res.tweet !== undefined) { //There is (at least) one empty entry in the API.
-                    this.setState({
-                        status: "LOADED",
-                        line: JSON.stringify(res.tweet),
-                        id: JSON.stringify(res._id)
-                    });
-                }
-                else {
-                    this.setState({
+                backEndInstance.voteCounts(res._id).then(votes => {
+                    if (res.tweet !== undefined) { //There is (at least) one empty entry in the API.
+                        this.setState({
+                            status: "LOADED",
+                            line: JSON.stringify(res.tweet),
+                            id: JSON.stringify(res._id),
+                            upvoted: false,
+                            downvoted: false,
+                            upvotes: JSON.parse(votes)[0],
+                            downvotes: JSON.parse(votes)[1]
+                        });
+                    }
+                    else {
+                        this.setState({
                             status: "LOADED",
                             line: " If you were a potato, you'd be a really nice potato. ",
-                            id: JSON.stringify(res._id)
+                            id: JSON.stringify(res._id),
+                            upvoted: false,
+                            downvoted: false,
+                            upvotes: JSON.parse(votes)[0],
+                            downvotes: JSON.parse(votes)[1]
                         })
-                }
+                    }
+                });
             });
         }
         catch (e) {
@@ -119,54 +132,74 @@ export default class HomeScreen extends Component {
     }
 
     handleUpvote() {
+        let newUp;
+        let newDown;
         let backend = this.props.navigation.getParam('backend');
         console.log("upvoting id ", this.state.id);
         //backend.upvote(this.state.id);
         if(!this.state.upvoted && !this.state.downvoted) { //no votes
             console.log("no votes, id: ", this.state.id);
             backend.upvote(this.state.id);
+            newUp = JSON.parse(this.state.upvotes)+1;
             this.setState({
-                upvoted: true
+                upvoted: true,
+                upvotes: newUp
             });
         } else if(!this.state.upvoted && this.state.downvoted){ //has been downvoted
             console.log("Has been downvoted, upvoting, id: ", this.state.id);
             backend.removeDownvote(this.state.id);
             backend.upvote(this.state.id);
+            newUp = JSON.parse(this.state.upvotes)+1;
+            newDown = JSON.parse(this.state.downvotes)-1;
             this.setState({
                 upvoted: true,
-                downvoted: false
+                downvoted: false,
+                upvotes: newUp,
+                downvotes: newDown
             });
         } else { //has been upvoted
             console.log("Removing upvote, id: ", this.state.id);
             backend.removeUpvote(this.state.id);
+            newUp = JSON.parse(this.state.upvotes)-1;
             this.setState({
-                upvoted: false
+                upvoted: false,
+                upvotes: newUp
             })
         }
     }
     handleDownvote() {
+        let newDown;
+        let newUp;
         let backend = this.props.navigation.getParam('backend');
         console.log("downvoting id ", this.state.id);
         //backend.downvote(this.state.id);
         if(!this.state.downvoted && !this.state.upvoted) { //no votes
             console.log("no votes, id: ", this.state.id);
             backend.downvote(this.state.id);
+            newDown = JSON.parse(this.state.downvotes)+1;
             this.setState({
-                downvoted: true
+                downvoted: true,
+                downvotes: newDown
             });
-        } else if(!this.state.downvoted && this.state.upvoted){ //has been downvoted
+        } else if(!this.state.downvoted && this.state.upvoted){ //has been upvoted
             console.log("Has been upvoted, downvoting, id: ", this.state.id);
             backend.removeUpvote(this.state.id);
             backend.downvote(this.state.id);
+            newUp = JSON.parse(this.state.upvotes)-1;
+            newDown = JSON.parse(this.state.downvotes)+1;
             this.setState({
                 upvoted: false,
-                downvoted: true
+                downvoted: true,
+                upvotes: newUp,
+                downvotes: newDown
             });
         } else { //has been downvoted
             console.log("Removing downvote, id: ", this.state.id);
             backend.removeDownvote(this.state.id);
+            newDown = JSON.parse(this.state.downvotes)-1;
             this.setState({
-                downvoted: false
+                downvoted: false,
+                downvotes: newDown
             })
         }
     }
@@ -192,14 +225,14 @@ export default class HomeScreen extends Component {
                 <View style={styles.buttonContainer}>
                     <Button
                         onPress={this.handleUpvote}
-                        title=""
+                        title={JSON.stringify(this.state.upvotes)}
                         icon={{name: 'thumb-up', size: 30, color: upvoteColor}}
                         accessibilityLabel="Like"
                         color="#ff8b94"
                         buttonStyle={{backgroundColor: '#98dea4', borderRadius: 10, marginRight: 10}}
                     /><Button
                         onPress={this.handleDownvote}
-                        title=""
+                        title={JSON.stringify(this.state.downvotes)}
                         icon={{name: 'thumb-down', size: 30, color: downvoteColor}}
                         accessibilityLabel="Dislike"
                         color="#ff8b94"
