@@ -10,6 +10,7 @@ export default class App extends React.Component {
   };
 
   async componentDidMount(){
+    console.disableYellowBox = true;
     console.log("REEEEEEEEEEEEEEENDER");
     backendModel.signIn("test@testson.se","testtesting").then(res=>{backendModel.favourite('56d7bea278c41dff2872fe0a').then(res=>{console.log("res", res)});});
     //backendModel.upvote('56d7bea278c41dff2872fe0a');
