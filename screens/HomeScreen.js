@@ -241,7 +241,7 @@ export default class HomeScreen extends Component {
                 </View>
                 <Image
                     style={styles.shakeGif}
-                    source={require('../assets/images/test.gif')}
+                    source={require('../assets/images/shakeme3.gif')}
                     resizeMode="contain"/>
 
             </LinearGradient>
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   },
     shakeGif: {
         marginTop: 50,
-        width: 200,
+        height: 200,
     },
   developmentModeText: {
     marginBottom: 20,
